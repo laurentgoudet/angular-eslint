@@ -302,6 +302,47 @@ describe('extract-inline-html', () => {
       });
     });
 
+    fdescribe('components with inline templates containing escape characters', () => {
+      let inlineTemplate = `
+        <input [value]="\\\${{this.aCost}} USD"></input>
+        <input [value]="'It\\\'s free'"></input>
+      `;
+
+      const testCases = [
+        {
+          input: `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'app-root',
+              template: \`${inlineTemplate}\`,
+              styleUrls: ['./app.component.scss']
+            })
+            export class AppComponent {
+              public aCost = 20;
+            }
+        `,
+        },
+      ];
+
+      testCases.forEach((tc, i) => {
+        it(`should extract the inline HTML of components with inline templates, CASE: ${i}`, () => {
+          expect(
+            processors['extract-inline-html'].preprocess(
+              tc.input,
+              'test.component.ts',
+            ),
+          ).toEqual([
+            tc.input,
+            {
+              filename: 'inline-template-1.component.html',
+              text: inlineTemplate.replace(/\r\n/g, '\n'),
+            },
+          ]);
+        });
+      });
+    });
+
     /**
      * Currently explicitly unsupported...
      */

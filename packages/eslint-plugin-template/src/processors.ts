@@ -144,9 +144,13 @@ export function preprocessComponentFile(
         continue;
       }
 
+      console.log(templateProperty.initializer);
       const templateText = templateProperty.initializer.text;
 
       const range = quickGetRangeForTemplate(text, templateText);
+      console.log(text);
+      console.log(templateText);
+      console.log(range);
 
       const inlineTemplateTmpFilename = `inline-template-${++id}.component.html`;
 
